@@ -1,0 +1,12 @@
+[package]
+name = "enc"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+aes-gcm = "0.10.3"
+argon2 = "0.5.3"
+rand = "0.8.5"
+structopt = "0.3.26"
+rpassword = "7.3.1"
+anyhow = "1.0.93"
