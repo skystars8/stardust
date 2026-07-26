@@ -1,0 +1,5 @@
+
+using modern rust cli (rust is currently on edition 2024 and Version 1.97.1) and using the latest versions of crates, make an aes-256-gcm-siv encryption cli app. The app name is aes. The commands are input file name, then output file name. Encrypt or decrypt is a capital letter E or D for encrypt or decrypt. For example, aes E input.txt output.txt or aes D output.txt input.txt . Process in memory for more rock solid reliability, no streaming is needed. refuse to overwrite a file that is already there for either E or D operations. Make sure proper use of the algo is achieved, relying on well established crates is always best, hand rolling is potentially dangerous. the expected key file used is always key.key in the same directory. In fact, the input and output files must remain in the same directory too, this makes it more reliable for cross platform. Although it is a simple app, try to make it as reliable, data safe and bulletproof as possible.  .. it only returned aes (and offered other aes implementations), xchacha and ascon to meet the standards. 
+
+
+safecrypt- XChaCha20-Poly1305 with streaming. 
