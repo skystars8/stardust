@@ -1,0 +1,22 @@
+[package]
+name = "rabbit"
+version = "0.4.0"
+edition = "2024"
+rust-version = "1.85"
+authors = ["Mark"]
+description = "Secure Rabbit stream cipher CLI — password-based, authenticated, atomic in-place encryption"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/example/rabbit"  # placeholder
+keywords = ["encryption", "stream-cipher", "rabbit", "cli", "password"]
+categories = ["command-line-utilities", "cryptography"]
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+rabbit = "0.5"
+argon2 = { version = "0.5", features = ["std"] }
+blake3 = "1.5"
+rand = "0.8"
+rpassword = "7.3"
+anyhow = "1.0"
+tempfile = "3.14"
+zeroize = { version = "1.8", features = ["std", "zeroize_derive"] }
