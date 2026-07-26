@@ -1,0 +1,11 @@
+[package]
+name = "aes_siv_encryption_app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+aes-siv = "0.7.0"
+rand = "0.8.5"
+clap = { version = "4.5.20", features = ["derive"] }
+anyhow = "1.0.71"
+zeroize = "1.6.0"
