@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crypt Tool Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2, h3, h4 {
+            color: #2c3e50;
+        }
+        pre {
+            background-color: #eef;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            background-color: #eef;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        a {
+            color: #3498db;
+        }
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        ol {
+            margin-left: 20px;
+        }
+        blockquote {
+            border-left: 4px solid #ccc;
+            padding-left: 10px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Crypt Tool Documentation (Updated)</h1>
+
+<p>The <code>crypt</code> tool is a versatile command-line application that provides various cryptographic functionalities, including key generation, byte scrambling, secure file erasure, and file analysis. It incorporates memory safety features to securely handle sensitive data.</p>
+
+<h2>Available Commands</h2>
+
+<p>The tool provides the following commands:</p>
+
+<ul>
+    <li><code>keygen</code>: Generate cryptographic key files, either randomly or deterministically using a password.</li>
+    <li><code>deterministickey</code>: Generate a deterministic key based on an input string.</li>
+    <li><code>scramble</code>: Randomly shuffle the bytes of a file.</li>
+    <li><code>erase</code>: Securely erase files by overwriting them with random data.</li>
+    <li><code>scan</code>: Analyze a file's byte frequencies and calculate entropy.</li>
+</ul>
+
+<h2>Commands Overview</h2>
+
+<h3>1. <code>keygen</code> Command</h3>
+
+<p><strong>Purpose:</strong> Generate a key file of a specified size, either randomly or deterministically using a password.</p>
+
+<h4>Usage:</h4>
+
+<pre><code>crypt keygen &lt;size&gt; --output-file &lt;output_file&gt; --mode &lt;random|deterministic&gt; [--password &lt;password&gt;]</code></pre>
+
+<h4>Arguments:</h4>
+
+<ul>
+    <li><code>&lt;size&gt;</code>: The size of the key file to generate. Examples:
+        <ul>
+            <li><code>32bytes</code></li>
+            <li><code>20mb</code></li>
+            <li><code>5gb</code></li>
+        </ul>
+    </li>
+    <li><code>--output-file &lt;output_file&gt;</code>: The path where the generated key file will be saved. This file must not already exist.</li>
+    <li><code>--mode &lt;random|deterministic&gt;</code>: The mode of key generation.
+        <ul>
+            <li><code>random</code>: Generates a key with random data.</li>
+            <li><code>deterministic</code>: Generates a key based on a password.</li>
+        </ul>
+    </li>
+    <li><code>--password &lt;password&gt;</code> (optional): Required if <code>--mode</code> is set to <code>deterministic</code>. This password is used to generate the deterministic key.</li>
+</ul>
+
+<h4>How It Works:</h4>
+
+<ul>
+    <li><strong>Random Mode</strong>:
+        <ul>
+            <li>Utilizes the operating system's secure random number generator (<code>OsRng</code>) to produce a key file filled with random bytes.</li>
+            <li>The key data is written directly to the specified output file.</li>
+        </ul>
+    </li>
+    <li><strong>Deterministic Mode</strong>:
+        <ul>
+            <li>Uses the Argon2 key derivation function to derive a cryptographic key from the provided password.</li>
+            <li>A fixed salt and parameters are used to ensure consistency across runs with the same password.</li>
+            <li>The derived key seeds a ChaCha20 random number generator (<code>ChaCha20Rng</code>).</li>
+            <li>An AES-256 cipher in CTR mode (<code>Aes256Ctr</code>) is applied to further enhance security.</li>
+            <li>The generated key data is written to the specified output file.</li>
+            <li>The same password will always produce the same key data.</li>
+        </ul>
+    </li>
+</ul>
+
+<h4>Memory Safety:</h4>
+
+<ul>
+    <li>Sensitive data such as passwords, derived keys, and buffers are securely zeroed out from memory after use using the <code>zeroize</code> crate.</li>
+    <li>This prevents residual data from lingering in memory, mitigating the risk of sensitive information leakage.</li>
+</ul>
+
+<h4>Examples:</h4>
+
+<pre><code># Generate a 32-byte random key and save it to random_key.key
+crypt keygen 32bytes --output-file random_key.key --mode random
+
+# Generate a 20 MB deterministic key with a password
+crypt keygen 20mb --output-file deterministic_key.key --mode deterministic --password "mypassword"</code></pre>
+
+<h3>2. <code>deterministickey</code> Command</h3>
+
+<p><strong>Purpose:</strong> Generate a deterministic key file of a specified size based on an input string.</p>
+
+<h4>Usage:</h4>
+
+<pre><code>crypt deterministickey &lt;size&gt; --output-file &lt;output_file&gt; --input-string &lt;input_string&gt;</code></pre>
+
+<h4>Arguments:</h4>
+
+<ul>
+    <li><code>&lt;size&gt;</code>: The size of the key file to generate. Examples:
+        <ul>
+            <li><code>32bytes</code></li>
+            <li><code>20mb</code></li>
+            <li><code>5gb</code></li>
+        </ul>
+    </li>
+    <li><code>--output-file &lt;output_file&gt;</code>: The path where the generated key file will be saved. This file must not already exist.</li>
+    <li><code>--input-string &lt;input_string&gt;</code>: The input string used to deterministically generate the key.</li>
+</ul>
+
+<h4>How It Works:</h4>
+
+<ul>
+    <li><strong>Hashing the Input String</strong>:
+        <ul>
+            <li>The input string is hashed using SHA-256 to produce a 32-byte seed.</li>
+            <li>This ensures that the same input string will always produce the same seed.</li>
+        </ul>
+    </li>
+    <li><strong>Initializing the RNG</strong>:
+        <ul>
+            <li>The seed initializes a ChaCha20 random number generator (<code>ChaCha20Rng</code>).</li>
+            <li>This RNG is cryptographically secure and produces a stream of pseudorandom bytes.</li>
+        </ul>
+    </li>
+    <li><strong>Generating Key Data</strong>:
+        <ul>
+            <li>The RNG generates key data of the specified size.</li>
+            <li>The key data is written to the specified output file.</li>
+        </ul>
+    </li>
+    <li><strong>Determinism</strong>:
+        <ul>
+            <li>Because the seed is derived from the input string, the process is deterministic.</li>
+            <li>Using the same input string will always result in the same key being generated.</li>
+        </ul>
+    </li>
+</ul>
+
+<h4>Memory Safety:</h4>
+
+<ul>
+    <li>The seed and key data buffers are securely zeroed out from memory after use with the <code>zeroize</code> crate.</li>
+    <li>This helps prevent any sensitive data from being recovered from memory.</li>
+</ul>
+
+<h4>Examples:</h4>
+
+<pre><code># Generate a 32-byte deterministic key based on the input string "mysecretstring"
+crypt deterministickey 32bytes --output-file deterministic_key.key --input-string "mysecretstring"
+
+# Generate a 20 MB deterministic key with a different input string
+crypt deterministickey 20mb --output-file big_key.key --input-string "anotherstring"</code></pre>
+
+<h3>3. <code>scramble</code> Command</h3>
+
+<p><strong>Purpose:</strong> Randomly shuffle the bytes of a file to obfuscate its contents.</p>
+
+<h4>Usage:</h4>
+
+<pre><code>crypt scramble &lt;input_file&gt; [output_file] [--overwrite]</code></pre>
+
+<h4>Arguments:</h4>
+
+<ul>
+    <li><code>&lt;input_file&gt;</code>: The path to the input file you want to scramble.</li>
+    <li><code>output_file</code> (optional): The path where the scrambled output file will be saved.</li>
+    <li><code>--overwrite</code> (optional): If specified, the input file will be overwritten with the scrambled data.</li>
+</ul>
+
+<h4>Notes:</h4>
+
+<ul>
+    <li>Either an <code>output_file</code> or the <code>--overwrite</code> flag must be specified.</li>
+    <li>If <code>output_file</code> is provided, the scrambled data is written there, and the original file remains unchanged.</li>
+    <li>If <code>--overwrite</code> is used, the original file is replaced with the scrambled data.</li>
+</ul>
+
+<h4>How It Works:</h4>
+
+<ul>
+    <li><strong>Reading the File</strong>:
+        <ul>
+            <li>The entire contents of the input file are read into memory.</li>
+        </ul>
+    </li>
+    <li><strong>Shuffling the Bytes</strong>:
+        <ul>
+            <li>A random number generator (<code>thread_rng</code>) is used to shuffle the bytes in the data buffer.</li>
+            <li>The <code>shuffle</code> function rearranges the bytes in a random order.</li>
+        </ul>
+    </li>
+    <li><strong>Writing the Scrambled Data</strong>:
+        <ul>
+            <li>The scrambled data is written to the specified output file or overwrites the original file.</li>
+        </ul>
+    </li>
+    <li><strong>Use Cases</strong>:
+        <ul>
+            <li>This function is primarily for obfuscation and should not be considered secure encryption.</li>
+        </ul>
+    </li>
+</ul>
+
+<h4>Memory Safety:</h4>
+
+<ul>
+    <li>After the operation, the data buffer is securely zeroed out using the <code>zeroize</code> crate.</li>
+    <li>This ensures that the original data cannot be recovered from memory.</li>
+</ul>
+
+<h4>Examples:</h4>
+
+<pre><code># Scramble a file and write to a new file
+crypt scramble input.txt scrambled_output.txt
+
+# Scramble a file and overwrite the original file
+crypt scramble input.txt --overwrite</code></pre>
+
+<h3>4. <code>erase</code> Command</h3>
+
+<p><strong>Purpose:</strong> Securely erase a file by overwriting it with random data, reducing the likelihood of data recovery.</p>
+
+<h4>Usage:</h4>
+
+<pre><code>crypt erase &lt;input_file&gt; [--passes &lt;number_of_passes&gt;]</code></pre>
+
+<h4>Arguments:</h4>
+
+<ul>
+    <li><code>&lt;input_file&gt;</code>: The path to the file you want to securely erase.</li>
+    <li><code>--passes &lt;number_of_passes&gt;</code> (optional): Number of times to overwrite the file. Default is 1.</li>
+</ul>
+
+<h4>How It Works:</h4>
+
+<ul>
+    <li><strong>Overwriting Data</strong>:
+        <ul>
+            <li>The file is opened in write mode.</li>
+            <li>For each pass, random data is generated and written over the entire file.</li>
+        </ul>
+    </li>
+    <li><strong>Multiple Passes</strong>:
+        <ul>
+            <li>Multiple overwrite passes can be specified for increased security.</li>
+            <li>Each pass uses new random data to overwrite the file contents.</li>
+        </ul>
+    </li>
+    <li><strong>File Retention</strong>:
+        <ul>
+            <li>The file remains on the filesystem but contains randomized data.</li>
+            <li>You may choose to delete the file manually after overwriting.</li>
+        </ul>
+    </li>
+    <li><strong>Limitations</strong>:
+        <ul>
+            <li>On some storage devices (e.g., SSDs with wear leveling), data may not be completely erased.</li>
+            <li>For highly sensitive data, consider additional measures like physical destruction.</li>
+        </ul>
+    </li>
+</ul>
+
+<h4>Memory Safety:</h4>
+
+<ul>
+    <li>The buffer used for overwriting is securely zeroed out after each pass.</li>
+    <li>This prevents any residual data from remaining in memory.</li>
+</ul>
+
+<h4>Examples:</h4>
+
+<pre><code># Securely erase a file with 1 pass
+crypt erase sensitive_data.txt
+
+# Securely erase a file with 3 passes
+crypt erase sensitive_data.txt --passes 3</code></pre>
+
+<h3>5. <code>scan</code> Command</h3>
+
+<p><strong>Purpose:</strong> Analyze a file's byte frequencies and calculate its Shannon entropy to assess randomness or detect patterns.</p>
+
+<h4>Usage:</h4>
+
+<pre><code>crypt scan &lt;input_file&gt; [--output-file &lt;report_file&gt;]</code></pre>
+
+<h4>Arguments:</h4>
+
+<ul>
+    <li><code>&lt;input_file&gt;</code>: The path to the file you want to analyze.</li>
+    <li><code>--output-file &lt;report_file&gt;</code> (optional): The path where the analysis report will be saved. Defaults to <code>report.txt</code> if not specified.</li>
+</ul>
+
+<h4>How It Works:</h4>
+
+<ul>
+    <li><strong>Reading the File</strong>:
+        <ul>
+            <li>The entire contents of the input file are read into memory.</li>
+        </ul>
+    </li>
+    <li><strong>Byte Frequency Analysis</strong>:
+        <ul>
+            <li>Counts the occurrence of each byte value (0-255) in the file.</li>
+        </ul>
+    </li>
+    <li><strong>Calculating Entropy</strong>:
+        <ul>
+            <li>Computes the Shannon entropy of the data, measuring the average unpredictability of the bytes.</li>
+            <li>Entropy values range from 0 to 8 bits per byte.</li>
+            <li>Higher entropy indicates more randomness.</li>
+        </ul>
+    </li>
+    <li><strong>Generating the Report</strong>:
+        <ul>
+            <li>The analysis, including byte frequencies and entropy, is written to the specified report file.</li>
+            <li>The report provides insights into the data's randomness and potential patterns.</li>
+        </ul>
+    </li>
+</ul>
+
+<h4>Memory Safety:</h4>
+
+<ul>
+    <li>The data buffer is securely zeroed out after analysis using the <code>zeroize</code> crate.</li>
+    <li>This ensures no residual data remains in memory.</li>
+</ul>
+
+<h4>Examples:</h4>
+
+<pre><code># Analyze a file and save the report to 'report.txt'
+crypt scan input_file.txt
+
+# Analyze a file and specify a custom report file
+crypt scan input_file.txt --output-file analysis_report.txt</code></pre>
+
+<h2>General Notes</h2>
+
+<ul>
+    <li><strong>Output File Checks</strong>: All commands check for existing output files to prevent accidental overwriting unless explicitly specified.</li>
+    <li><strong>Cryptographic Security</strong>: Secure random number generators are used to ensure cryptographic strength where applicable.</li>
+    <li><strong>Memory Safety</strong>: The <code>zeroize</code> crate is employed throughout to prevent sensitive data from lingering in memory.</li>
+    <li><strong>Error Handling</strong>: The tool provides informative error messages to guide the user in case of incorrect usage or failures.</li>
+</ul>
+
+<h2>Security Considerations</h2>
+
+<ul>
+    <li><strong>Deterministic Key Generation</strong>:
+        <ul>
+            <li>Deterministic keys are reproducible if the input string or password is known.</li>
+            <li>Avoid using easily guessable input strings or passwords.</li>
+            <li>For secure applications, ensure that the input string is kept secret and is sufficiently complex.</li>
+        </ul>
+    </li>
+    <li><strong>Byte Scrambling</strong>:
+        <ul>
+            <li>Scrambling bytes is not a secure form of encryption.</li>
+            <li>It only obfuscates the data and can be reversed if the scrambling process is known.</li>
+            <li>Do not rely on scrambling for protecting sensitive information.</li>
+        </ul>
+    </li>
+    <li><strong>Secure Erasure Limitations</strong>:
+        <ul>
+            <li>Overwriting files may not guarantee complete data removal due to hardware-level optimizations like wear leveling in SSDs.</li>
+            <li>For highly sensitive data, consider using full-disk encryption or physically destroying the storage media.</li>
+        </ul>
+    </li>
+    <li><strong>Entropy Analysis</strong>:
+        <ul>
+            <li>Entropy values close to 8 bits per byte suggest high randomness, which is expected in encrypted files.</li>
+            <li>Lower entropy values may indicate patterns, making the data more susceptible to analysis or compression.</li>
+        </ul>
+    </li>
+</ul>
+
+<h2>Best Practices</h2>
+
+<ul>
+    <li><strong>Key Management</strong>:
+        <ul>
+            <li>Keep your keys and passwords secure.</li>
+            <li>Avoid reusing keys or passwords across different systems or applications.</li>
+        </ul>
+    </li>
+    <li><strong>Password Complexity</strong>:
+        <ul>
+            <li>Use strong, complex passwords for deterministic key generation.</li>
+            <li>Consider using passphrase generators or password managers.</li>
+        </ul>
+    </li>
+    <li><strong>Data Backup</strong>:
+        <ul>
+            <li>Always back up important data before performing operations like scrambling or erasure.</li>
+        </ul>
+    </li>
+    <li><strong>Legal Compliance</strong>:
+        <ul>
+            <li>Ensure that your use of cryptographic tools complies with local laws and regulations.</li>
+        </ul>
+    </li>
+</ul>
+
+<h2>Conclusion</h2>
+
+<p>The <code>crypt</code> tool provides a range of functionalities for handling cryptographic tasks with an emphasis on memory safety and secure practices. While it offers useful features, users should be aware of its limitations and ensure that it is used appropriately within the context of their security requirements.</p>
+
+<p>For robust security needs, consider using well-established cryptographic libraries and protocols, and consult security professionals to ensure best practices are followed.</p>
+
+<hr>
+
+<p><strong>Note:</strong> This documentation has been updated to reflect the removal of the <code>xor</code> command and the addition of the <code>deterministickey</code> command. Detailed explanations have been provided for each function to help users understand exactly what each command does and how it should be used.</p>
+
+</body>
+</html>
