@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rage Encryption Reference & FAQ</title>
+  <style>
+    body { font-family: sans-serif; line-height: 1.6; margin: 2rem; }
+    pre { background: #f4f4f4; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+    h1, h2, h3 { color: #333; }
+    code { font-family: monospace; }
+    dl { margin: 0; }
+    dt { font-weight: bold; margin-top: 1rem; }
+    dd { margin-left: 1rem; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Rage Encryption Reference</h1>
+
+  <h2>1. Compile</h2>
+  <p>Build both <code>rage</code> and <code>rage-keygen</code> executables:</p>
+  <pre><code>cargo build --release --bins</code></pre>
+
+  <h2>2. Encrypt with a Passphrase</h2>
+  <pre><code>rage --passphrase -o example.txt.age example.txt</code></pre>
+
+  <h2>3. Decrypt</h2>
+  <pre><code>rage --decrypt example.txt.age &gt; example.txt</code></pre>
+
+  <h2>4. Using a Key Pair</h2>
+  <ol>
+    <li>
+      <pre><code>rage-keygen --output key.txt</code></pre>
+    </li>
+    <li>
+      <pre><code>rage --recipient age1xyz... -o example.txt.age example.txt</code></pre>
+    </li>
+    <li>
+      <pre><code>rage --identity key.txt --decrypt example.txt.age &gt; example.txt</code></pre>
+    </li>
+  </ol>
+
+  <h2>5. Encrypting and Decrypting with Your Own Key Locally</h2>
+  <p>Use your public key to encrypt, and your identity file to decrypt:</p>
+  <pre><code>rage --recipient age1xyz... -o secret.txt.age secret.txt
+rage --identity key.txt --decrypt secret.txt.age &gt; secret.txt</code></pre>
+
+  <h2>6. FAQ</h2>
+  <dl>
+    <dt>1. What command compiles both <code>rage</code> and <code>rage-keygen</code>?</dt>
+    <dd>Run <code>cargo build --release --bins</code>.</dd>
+
+    <dt>2. How do I encrypt and decrypt <code>example.txt</code> with a passphrase?</dt>
+    <dd>
+      <code>rage --passphrase -o example.txt.age example.txt</code><br>
+      <code>rage --decrypt example.txt.age &gt; example.txt</code>
+    </dd>
+
+    <dt>3. Is a passphrase ever as secure as a key pair?</dt>
+    <dd>No. A key pair provides ~256 bits of true random entropy; typical passphrases are far lower and rely on scrypt for protection but can’t match raw entropy.</dd>
+
+    <dt>4. How do I both use a passphrase and a key pair?</dt>
+    <dd>See sections 2–4 above: use <code>--passphrase</code> to encrypt, <code>--decrypt</code> to decrypt; use <code>rage-keygen</code> and <code>--recipient</code>/<code>--identity</code> for key pairs.</dd>
+
+    <dt>5. How can I encrypt/decrypt a file for myself?</dt>
+    <dd>Generate a key pair (<code>rage-keygen</code>) and then <code>--recipient</code>/<code>--identity</code> as in section 5.</dd>
+
+    <dt>6. Is there a limit on passphrase length?</dt>
+    <dd>No built-in limit; you’re constrained only by your shell/OS buffer (usually thousands of chars). Rage will feed the entire string into scrypt.</dd>
+
+    <dt>7. Can you show an example high-entropy passphrase?</dt>
+    <dd><code>hepPGA8iehZpEIVfy80tbqswGwFA1SF3yWazEZufbt5S0QSYXnZcmZ5mcvUtL068</code> (64 random alphanumeric characters).</dd>
+
+    <dt>8. Can Rage handle executables?</dt>
+    <dd>Yes—rage encrypts raw bytes, regardless of file type (PE, ELF, PNG, etc.).</dd>
+
+    <dt>9. Should I ZIP executables before encrypting?</dt>
+    <dd>No; rage fully encrypts the executable header. You can zip first only if you want compression or to hide filenames.</dd>
+
+    <dt>10. Does Rage overwrite the original file in-place?</dt>
+    <dd>No direct in-place flag. Use <code>-o</code> to write to a new file, or a temp file + <code>mv</code>/<code>sponge</code> to replace in-place safely.</dd>
+
+    <dt>11. Can overwriting the first bytes of an executable break it?</dt>
+    <dd>Yes—if you truly patch bytes. But rage never writes in-place; it reads the entire input and writes a separate encrypted file, leaving the original intact.</dd>
+  </dl>
+</body>
+</html>
