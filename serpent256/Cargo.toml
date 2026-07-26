@@ -1,0 +1,28 @@
+[package]
+name = "serpent256"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.97"
+description = "Simple whole-file Serpent-256 + HMAC-SHA-256 encrypt/decrypt (32-byte key)"
+license = "MIT"
+
+[[bin]]
+name = "serpent256"
+path = "src/main.rs"
+
+[dependencies]
+serpent = "0.6"
+# Use the newer stack that matches serpent 0.6
+hmac = "0.13"
+sha2 = "0.11"
+cipher = "0.5"
+anyhow = "1.0"
+rand = "0.8"
+zeroize = "1.7"
+console = "0.15"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
