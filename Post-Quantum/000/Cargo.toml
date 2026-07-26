@@ -1,0 +1,9 @@
+[package]
+name = "post_quantum_file_crypto"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+pqcrypto = "0.17.0"
+pqcrypto-kyber = "0.8.1"
+rand = "0.8.5"

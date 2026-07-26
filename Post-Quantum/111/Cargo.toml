@@ -1,0 +1,10 @@
+[package]
+name = "post_quantum_file_crypto"
+version = "0.2.0"
+edition = "2021"
+
+[dependencies]
+pqcrypto-frodo = "0.4.11"
+pqcrypto-traits = "0.3.5"
+blake3 = "1.5.4"
+rand = "0.8.5"

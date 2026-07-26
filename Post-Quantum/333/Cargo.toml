@@ -1,0 +1,12 @@
+[package]
+name = "post_quantum_file_crypto"
+version = "0.3.0"
+edition = "2021"
+
+[dependencies]
+pqcrypto-frodo = "0.4.11"
+pqcrypto-traits = "0.3.5"
+rand = { version = "0.8.5", features = ["std"] }
+chacha20poly1305 = "0.10.1"   # No additional feature flag needed
+rpassword = "7.3.1"
+blake3 = "1.5.4"   # Add blake3 dependency
