@@ -1,0 +1,8 @@
+[package]
+name = "key_converter"
+version = "0.1.0"
+edition = "2021"
+description = "Strictly convert a one-number-per-line list of 32 bytes (0-255) into a binary AES-256 / XChaCha20 key"
+authors = ["Grok"]
+
+[dependencies]
