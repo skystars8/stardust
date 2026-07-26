@@ -1,0 +1,22 @@
+[package]
+name = "xchacha"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.97.1"
+description = "Bulletproof XChaCha20-Poly1305 file encryption/decryption CLI. Processes entirely in memory. Requires key.key (exactly 32 bytes) in the working directory. Input and output must be simple filenames in the same directory (no paths)."
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["xchacha", "chacha20", "poly1305", "encryption", "cli", "aead"]
+categories = ["command-line-utilities", "cryptography"]
+
+[dependencies]
+chacha20poly1305 = "0.11.0"
+anyhow = "1.0.104"
+clap = { version = "4.6.4", features = ["derive"] }
+zeroize = "1.8"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
