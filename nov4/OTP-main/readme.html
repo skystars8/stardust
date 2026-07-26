@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One-Time Pad CLI Application - README</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2em auto;
+            background: #fff;
+            padding: 2em;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 1.5em;
+        }
+        code {
+            background-color: #eef;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+        }
+        p {
+            margin-bottom: 1em;
+        }
+        ul {
+            margin: 1em 0;
+            padding-left: 20px;
+        }
+        ul li {
+            margin-bottom: 0.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>One-Time Pad CLI Application - README</h1>
+        <p>This README provides details on how to use the One-Time Pad (OTP) Command Line Interface (CLI) application for encrypting files using XOR-based encryption. The application provides four processing modes, depending on the size of the files and the intended workflow.</p>
+
+        <h2>Usage</h2>
+        <p>The application is run from the command line with the following syntax:</p>
+        <code>otp &lt;mode&gt; &lt;input_file&gt; &lt;output_file&gt; &lt;key_file&gt;</code>
+        <p>Where:</p>
+        <ul>
+            <li><code>mode</code>: The mode of operation (1, 2, 3, or 4).</li>
+            <li><code>input_file</code>: The name of the input file that you want to encrypt or decrypt (must be located in the same directory as the executable).</li>
+            <li><code>output_file</code>: The name of the output file where the encrypted or decrypted data will be written (for modes 1, 2, and 4; must be located in the same directory as the executable).</li>
+            <li><code>key_file</code>: The name of the key file used for encryption or decryption (must be located in the same directory as the executable).</li>
+        </ul>
+        <p>Note: All files (input, output, and key) must be located in the same directory as the executable for security and simplicity.</p>
+
+        <h2>Modes of Operation</h2>
+        <ul>
+            <li><strong>Mode 1: Read Entire Key and File into Buffers</strong><br>
+                This mode reads the entire input file and key into memory buffers, then performs XOR encryption. It is suitable for small to moderately large files that can comfortably fit into available system memory.
+                <br><strong>Example:</strong> <code>otp 1 a.tst out.tst key.tst</code><br><strong>Decrypt Example:</strong> <code>otp 1 out.tst out1.tst key.tst</code>
+                <br><strong>Note:</strong> The key file must be at least as long as the input file.
+            </li>
+            <li><strong>Mode 2: Chunk-Based Processing</strong><br>
+                This mode reads the input and key files in chunks and processes them iteratively, making it ideal for large files that cannot be entirely loaded into memory.
+                <br><strong>Example:</strong> <code>otp 2 a.tst out.tst key.tst</code><br><strong>Decrypt Example:</strong> <code>otp 2 out.tst out1.tst key.tst</code>
+                <br><strong>Note:</strong> The key file must be at least as long as the input file.
+            </li>
+            <li><strong>Mode 3: Overwrite File in Place</strong><br>
+                This mode reads the entire input file and key into memory, performs XOR encryption, and then overwrites the original input file. It creates a temporary file to ensure the original file is only overwritten if the entire process is successful.
+                <br><strong>Example:</strong> <code>otp 3 a.tst a.tst key.tst</code>
+                <br><strong>Note:</strong> The key file must be at least as long as the input file.
+            </li>
+            <li><strong>Mode 4: Informal Key Wrapping</strong><br>
+                This mode allows the key to be shorter than the input file. The key will wrap around as necessary to match the length of the input file, making it a more flexible but less secure option. This is suitable for informal or non-critical use cases.
+                <br><strong>Example:</strong> <code>otp 4 a.tst out.tst key.tst</code><br><strong>Decrypt Example:</strong> <code>otp 4 out.tst out1.tst key.tst</code>
+                <br><strong>Note:</strong> This mode allows the key file to be shorter than the input file, similar to Mode 3.
+            </li>
+        </ul>
+
+        <h2>Important Notes</h2>
+        <ul>
+            <li><strong>Output File Safety</strong>: In modes 1, 2, and 4, the application will not overwrite an existing output file. If the specified output file already exists, the program will terminate with an error to ensure data safety.</li>
+            <li><strong>Key Length Verification</strong>: In modes 1, 2, and 3, the key file must be at least as long as the input file. In mode 4, the key can be shorter, and it will wrap around as necessary.</li>
+            <li><strong>Memory Requirements</strong>: Use Mode 1 for fast processing when files are small enough to fit into memory. For larger files, use Mode 2 to avoid excessive memory consumption.</li>
+            <li><strong>Mode 3 In-Place Overwrite</strong>: Mode 3 will overwrite the original input file. This method should be used with caution, as the original file will be permanently modified. A temporary file is used to ensure reliability, and the original file is only deleted once the entire process is complete. The key file must be at least as long as the input file.</li>
+        </ul>
+
+        <h2>Example Usage</h2>
+        <p>To encrypt a file using Mode 1:</p>
+        <code>otp 1 a.tst out.tst key.tst</code>
+        <p>To encrypt a large file using Mode 2:</p>
+        <code>otp 2 a.tst out.tst key.tst</code>
+        <p>To encrypt a file in place using Mode 3:</p>
+        <code>otp 3 a.tst a.tst key.tst</code>
+        <p>To encrypt a file using Mode 4 with a wrapping key:</p>
+        <code>otp 4 a.tst out.tst key.tst</code>
+
+        <h2>Error Handling</h2>
+        <p>If incorrect input is provided, such as an invalid mode or insufficient arguments, the application will display an error message and instruct the user to consult this README for correct usage.</p>
+
+        <h2>Requirements</h2>
+        <p>The application is written in Rust and requires the Rust compiler to build. Ensure that Rust is properly installed before attempting to compile the application.</p>
+
+        <h2>Compilation Instructions</h2>
+        <p>To compile the application, use the following command:</p>
+        <code>cargo build --release</code>
+        <p>This will produce an executable in the <code>target/release</code> directory.</p>
+
+        <h2>Disclaimer</h2>
+        <p>Ensure that the key used for encryption is kept secure and is never reused with the same input file. Reusing keys compromises the security of the encryption.</p>
+    </div>
+</body>
+</html>

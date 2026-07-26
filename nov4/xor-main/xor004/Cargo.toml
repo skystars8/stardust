@@ -1,0 +1,10 @@
+[package]
+name = "xor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chacha20 = "0.9.1"
+rand = "0.8.5"
+argon2 = "0.5.3"
+sha3 = "0.10.8"
