@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Deterministic Key Generator</title>
+<style>
+  body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+  h1, h2, h3 { color: #333; }
+  code { background-color: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
+  pre { background-color: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }
+  ul { margin-left: 20px; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  hr { border: 0; border-top: 1px solid #ccc; margin: 40px 0; }
+</style>
+</head>
+<body>
+
+<h1>Deterministic Key Generator</h1>
+
+<p>A Rust-based deterministic key generator that produces cryptographically secure keys of sizes ranging from 1 byte to 5 GB. The keys are generated using a combination of Argon2 key derivation, AES-256 in CTR mode, and a CSPRNG seeded with the derived key, ensuring both determinism and high entropy.</p>
+
+<h2>Table of Contents</h2>
+<ul>
+  <li><a href="#features">Features</a></li>
+  <li><a href="#prerequisites">Prerequisites</a></li>
+  <li><a href="#installation">Installation</a></li>
+  <li><a href="#usage">Usage</a></li>
+  <li><a href="#configuration">Configuration</a></li>
+  <li><a href="#security-considerations">Security Considerations</a></li>
+  <li><a href="#license">License</a></li>
+</ul>
+
+<h2 id="features">Features</h2>
+
+<ul>
+  <li><strong>Deterministic Key Generation</strong>: Generates the same key when the same password, salt, IV, and parameters are used.</li>
+  <li><strong>Configurable Key Size</strong>: Supports key sizes from 1 byte up to 5 GB.</li>
+  <li><strong>Strong Cryptography</strong>:
+    <ul>
+      <li>Uses <strong>Argon2id</strong> for password-based key derivation.</li>
+      <li>Utilizes <strong>AES-256</strong> in CTR mode for encryption.</li>
+      <li>Employs a <strong>ChaCha20</strong> CSPRNG seeded with the derived key for additional randomness.</li>
+    </ul>
+  </li>
+  <li><strong>Security Focused</strong>:
+    <ul>
+      <li>Zeroizes sensitive data in memory after use.</li>
+      <li>Prevents overwriting existing key files.</li>
+    </ul>
+  </li>
+  <li><strong>Customizable Parameters</strong>: Allows compile-time configuration of cryptographic parameters, salt, IV, and output filename.</li>
+</ul>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<ul>
+  <li><strong>Rust</strong> programming language installed (Rust 1.56+ recommended).</li>
+  <li><strong>Cargo</strong> package manager (comes with Rust).</li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+
+<ol>
+  <li><strong>Clone the Repository</strong>:
+    <pre><code>git clone https://github.com/yourusername/deterministic-key-generator.git
+cd deterministic-key-generator
+    </code></pre>
+  </li>
+  <li><strong>Update Dependencies</strong>:
+
+    <p>Ensure that your <code>Cargo.toml</code> contains the following dependencies:</p>
+
+    <pre><code>[dependencies]
+argon2 = "0.5.3"
+aes = "0.8.4"
+ctr = "0.9.2"
+rand = "0.8.5"
+rand_chacha = "0.3.1"
+zeroize = "1.8.1"
+    </code></pre>
+  </li>
+</ol>
+
+<h2 id="usage">Usage</h2>
+
+<h3>Building the Project</h3>
+
+<p>Compile the project in release mode for optimal performance:</p>
+
+<pre><code>cargo build --release
+</code></pre>
+
+<h3>Running the Program</h3>
+
+<p>The program requires three arguments:</p>
+
+<ol>
+  <li><strong>Size</strong>: The size of the key to generate (as a number).</li>
+  <li><strong>Unit</strong>: The unit of the size (<code>bytes</code>, <code>mb</code>, or <code>gb</code>).</li>
+  <li><strong>Password</strong>: A secure password used for key derivation.</li>
+</ol>
+
+<h4>Syntax</h4>
+
+<pre><code>cargo run --release -- &lt;size&gt; &lt;bytes|mb|gb&gt; &lt;password&gt;
+</code></pre>
+
+<h4>Examples</h4>
+
+<ul>
+  <li>Generate a 1 GB key:
+
+    <pre><code>cargo run --release -- 1 gb your_secure_password_here
+</code></pre>
+  </li>
+  <li>Generate a 512 MB key:
+
+    <pre><code>cargo run --release -- 512 mb your_secure_password_here
+</code></pre>
+  </li>
+  <li>Generate a 1024-byte key:
+
+    <pre><code>cargo run --release -- 1024 bytes your_secure_password_here
+</code></pre>
+  </li>
+</ul>
+
+<h3>Output</h3>
+
+<p>The generated key file will be saved as <code>key1.key1</code> in the current directory by default. The program will not overwrite an existing file with the same name.</p>
+
+<h2 id="configuration">Configuration</h2>
+
+<p>You can adjust several parameters in the <code>main.rs</code> file to suit your needs. These parameters are located near the top of the file for easy access.</p>
+
+<h3>Compile-Time Configurable Parameters</h3>
+
+<pre><code>// Compile-time configurable parameters
+const OUTPUT_FILENAME: &amp;str = "key1.key1";
+
+// The following constants can be adjusted at compile time
+const SALT: &[u8] = b"your_salt_here"; // Must be at least 8 bytes
+const IV: [u8; 16] = [
+    12, 85, 240, 66, 171, 19, 55, 129,
+    200, 33, 147, 89, 78, 123, 211, 34,
+]; // Must be 16 bytes
+
+// Argon2 parameters
+const ARGON2_MEMORY_COST: u32 = 65536; // Memory cost in kibibytes
+const ARGON2_TIME_COST: u32 = 3;       // Number of iterations
+const ARGON2_PARALLELISM: u32 = 1;     // Degree of parallelism
+</code></pre>
+
+<h4><strong>SALT</strong></h4>
+
+<ul>
+  <li><strong>Purpose</strong>: Adds uniqueness to the key derivation process.</li>
+  <li><strong>Requirements</strong>:
+    <ul>
+      <li>Must be at least 8 bytes long.</li>
+      <li>Should be a high-entropy value.</li>
+    </ul>
+  </li>
+  <li><strong>Example</strong>:
+
+    <pre><code>const SALT: &[u8] = b"My$3cureS@lt";
+</code></pre>
+  </li>
+</ul>
+
+<h4><strong>Initialization Vector (IV)</strong></h4>
+
+<ul>
+  <li><strong>Purpose</strong>: Used in AES-256 CTR mode encryption.</li>
+  <li><strong>Requirements</strong>:
+    <ul>
+      <li>Must be exactly 16 bytes long.</li>
+      <li>Should be composed of high-entropy <code>u8</code> values between 0 and 255.</li>
+    </ul>
+  </li>
+  <li><strong>Example</strong>:
+
+    <pre><code>const IV: [u8; 16] = [
+    34, 201, 23, 87, 156, 45, 78, 90,
+    12, 234, 56, 190, 65, 43, 22, 111,
+];
+</code></pre>
+  </li>
+</ul>
+
+<h4><strong>Argon2 Parameters</strong></h4>
+
+<ul>
+  <li><strong>ARGON2_MEMORY_COST</strong>: Memory usage in kibibytes (e.g., <code>65536</code> for 64 MB).</li>
+  <li><strong>ARGON2_TIME_COST</strong>: Number of iterations (higher increases computation time).</li>
+  <li><strong>ARGON2_PARALLELISM</strong>: Degree of parallelism (number of threads).</li>
+</ul>
+
+<p><strong>Note</strong>: Increasing these values enhances security but also increases resource usage.</p>
+
+<h2 id="security-considerations">Security Considerations</h2>
+
+<p><strong>Important</strong>: This application is designed for deterministic key generation, which means the same input parameters will always produce the same key. While this can be useful for certain applications, it introduces several security considerations:</p>
+
+<h3><strong>Password Security</strong></h3>
+
+<ul>
+  <li><strong>Strong Passwords</strong>: Always use a strong, high-entropy password to prevent brute-force and dictionary attacks.</li>
+  <li><strong>Password Protection</strong>: Keep your password confidential and avoid sharing it or storing it insecurely.</li>
+</ul>
+
+<h3><strong>SALT and IV Confidentiality</strong></h3>
+
+<ul>
+  <li><strong>Keep Them Secret</strong>: Since the <code>SALT</code> and <code>IV</code> are constants in the code, they must be kept secret to maintain the security of the generated keys.</li>
+  <li><strong>High Entropy</strong>: Use values that are random and not easily guessable.</li>
+  <li><strong>Do Not Share</strong>: Do not share your <code>SALT</code> and <code>IV</code> values publicly or include them in version control systems.</li>
+</ul>
+
+<h3><strong>Determinism vs. Security</strong></h3>
+
+<ul>
+  <li><strong>Risk of Predictability</strong>: Deterministic key generation can be a security risk if unauthorized parties gain access to your password, <code>SALT</code>, or <code>IV</code>, as they can generate the same keys.</li>
+  <li><strong>Use Cases</strong>: Ensure that determinism is a necessary feature for your application and that you have measures in place to mitigate associated risks.</li>
+</ul>
+
+<h3><strong>File Permissions</strong></h3>
+
+<ul>
+  <li><strong>Restrict Access</strong>: After generating the key file, set restrictive permissions to prevent unauthorized access.
+    <ul>
+      <li>On Unix-like systems:
+
+        <pre><code>chmod 600 key1.key1
+</code></pre>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3><strong>Zeroizing Sensitive Data</strong></h3>
+
+<ul>
+  <li><strong>In-Memory Data</strong>: The application zeroizes sensitive data like the derived key and buffer after use to reduce the risk of data lingering in memory.</li>
+</ul>
+
+<h3><strong>No Overwriting</strong></h3>
+
+<ul>
+  <li><strong>Prevent Accidental Overwrites</strong>: The program checks if the output file already exists and will not overwrite it, preventing accidental loss of data.</li>
+</ul>
+
+<h3><strong>Regular Audits</strong></h3>
+
+<ul>
+  <li><strong>Code Review</strong>: Periodically review the code for potential vulnerabilities.</li>
+  <li><strong>Dependency Updates</strong>: Keep dependencies up to date to incorporate security patches.</li>
+</ul>
+
+<h2 id="license">License</h2>
+
+<p>This project is licensed under the MIT License. See the <a href="LICENSE">LICENSE</a> file for details.</p>
+
+<hr>
+
+<p><strong>Disclaimer</strong>: Cryptographic applications are inherently complex, and small mistakes can lead to significant vulnerabilities. While this application implements robust cryptographic techniques, it is crucial to ensure that it meets the security requirements of your specific use case. Always consult with a cybersecurity professional when deploying cryptographic software in production environments.</p>
+
+<hr>
+
+<p><strong>Need Help?</strong></p>
+
+<p>If you have any questions or need further assistance, feel free to open an issue on the repository or contact the maintainer.</p>
+
+</body>
+</html>

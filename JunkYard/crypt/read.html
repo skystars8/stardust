@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crypt Tool Commands</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 4px;
+            font-size: 90%;
+            color: #c7254e;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        .command {
+            margin-bottom: 30px;
+        }
+        ul {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <h1>Crypt Tool Commands</h1>
+
+    <p>The <code>crypt</code> tool provides two primary commands:</p>
+
+    <div class="command">
+        <h2>1. <code>keygen</code> Command</h2>
+        <p><strong>Purpose:</strong> Generate a key file of a specified size, either randomly or deterministically using a password.</p>
+        <h3>Usage:</h3>
+        <pre><code>crypt keygen &lt;size&gt; --mode &lt;random|deterministic&gt; [--password &lt;password&gt;]</code></pre>
+        <h3>Arguments:</h3>
+        <ul>
+            <li><code>&lt;size&gt;</code>: The size of the key file to generate. Examples:
+                <ul>
+                    <li><code>32bytes</code></li>
+                    <li><code>20mb</code></li>
+                    <li><code>5gb</code></li>
+                </ul>
+            </li>
+            <li><code>--mode</code>: The mode of key generation.
+                <ul>
+                    <li><code>random</code>: Generates a key with random data.</li>
+                    <li><code>deterministic</code>: Generates a key based on a password.</li>
+                </ul>
+            </li>
+            <li><code>--password</code> (optional): Required if <code>--mode</code> is set to <code>deterministic</code>. This is the password used to generate the deterministic key.</li>
+        </ul>
+        <h3>Examples:</h3>
+        <pre><code># Generate a 32-byte random key
+crypt keygen 32bytes --mode random
+
+# Generate a 20 MB deterministic key with a password
+crypt keygen 20mb --mode deterministic --password mypassword</code></pre>
+    </div>
+
+    <div class="command">
+        <h2>2. <code>xor</code> Command</h2>
+        <p><strong>Purpose:</strong> Perform XOR encryption or decryption on a file using a key file.</p>
+        <h3>Usage:</h3>
+        <pre><code>crypt xor &lt;input_file&gt; &lt;output_file&gt; &lt;key_file&gt;</code></pre>
+        <h3>Arguments:</h3>
+        <ul>
+            <li><code>&lt;input_file&gt;</code>: The path to the input file you want to encrypt or decrypt.</li>
+            <li><code>&lt;output_file&gt;</code>: The path where the output (encrypted or decrypted) file will be saved.</li>
+            <li><code>&lt;key_file&gt;</code>: The path to the key file that will be used for the XOR operation.</li>
+        </ul>
+        <h3>Examples:</h3>
+        <pre><code># Encrypt a file
+crypt xor mydocument.txt encrypted_output.bin key.key
+
+# Decrypt a file
+crypt xor encrypted_output.bin decrypted_document.txt key.key</code></pre>
+    </div>
+
+    <h2>Notes</h2>
+    <ul>
+        <li>The <code>keygen</code> command generates a key file named <code>key.key</code> in the current directory. If a file named <code>key.key</code> already exists, the command will display an error.</li>
+        <li>When using the <code>xor</code> command, ensure that the key file is at least as large as the input file.</li>
+        <li>The application does not provide built-in help or version information. For detailed instructions and examples, refer to this documentation.</li>
+    </ul>
+</body>
+</html>

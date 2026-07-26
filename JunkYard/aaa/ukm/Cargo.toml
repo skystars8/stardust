@@ -1,0 +1,10 @@
+[package]
+name = "ukm"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hkdf = "0.12.4"
+sha2 = "0.10.8"
+aes = "0.8.4"
+ctr = "0.9.2"

@@ -1,0 +1,11 @@
+[package]
+name = "feistel_cipher"
+version = "0.2.0"
+edition = "2021"
+
+[dependencies]
+sha2 = "0.10.8"
+hmac = "0.12.1"
+rand = "0.8.5"
+zeroize = "1.5.6"
+rpassword = "7.0.1"

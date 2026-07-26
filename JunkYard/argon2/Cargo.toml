@@ -1,0 +1,15 @@
+[package]
+name = "argon2-keygen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Command line argument parsing
+clap = { version = "4.5.19", features = ["derive"] }
+
+# Argon2 key derivation and password hashing
+argon2 = "0.5.3"
+
+# Secure random number generation for salt creation using rand crate
+rand = "0.8.5"  # Provides OsRng for secure RNG
+
