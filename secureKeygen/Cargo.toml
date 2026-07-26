@@ -1,0 +1,10 @@
+[package]
+name = "sec-keygen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.20", features = ["derive"] }
+argon2 = "0.5.3"
+chacha20 = "0.9.1"
+zeroize = "1.8.1"

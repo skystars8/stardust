@@ -1,0 +1,11 @@
+[package]
+name = "secure_key_generator"
+version = "0.1.0"
+authors = ["Your Name <your.email@example.com>"]
+edition = "2021"
+
+[dependencies]
+rand = "0.8.5"
+
+[profile.release]
+incremental = false

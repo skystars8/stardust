@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure - README</title>
+</head>
+<body>
+
+<h1>Secure</h1>
+
+<p>
+    Secure is a Rust-based application that combines a key generation tool and a one-time pad (OTP) encryption/decryption processor. The application allows users to generate cryptographically secure key files and use them to encrypt or decrypt data using the OTP method.
+</p>
+
+<h2>Features</h2>
+<ul>
+    <li>Key generation using Argon2 KDF, AES-256 in CTR mode, and ChaCha20 CSPRNG.</li>
+    <li>OTP encryption/decryption of files.</li>
+    <li>Command-line interface with two modes: <code>keygen</code> and <code>process</code>.</li>
+</ul>
+
+<h2>Prerequisites</h2>
+<p>
+    To build and run Secure, you need to have the following installed:
+</p>
+<ul>
+    <li>Rust programming language (version 1.56 or higher).</li>
+    <li>Cargo build tool (comes with Rust).</li>
+</ul>
+
+<h2>Installation</h2>
+<ol>
+    <li>Clone the repository:
+        <pre><code>git clone https://github.com/yourusername/secure.git</code></pre>
+    </li>
+    <li>Navigate to the project directory:
+        <pre><code>cd secure</code></pre>
+    </li>
+    <li>Build the application:
+        <pre><code>cargo build --release</code></pre>
+    </li>
+</ol>
+
+<h2>Usage</h2>
+<p>
+    Secure operates in two modes: <code>keygen</code> for key generation and <code>process</code> for OTP encryption/decryption.
+</p>
+
+<h3>Key Generation Mode</h3>
+<p>
+    Generates a key file with cryptographically secure random data.
+</p>
+<h4>Syntax:</h4>
+<pre><code>secure.exe keygen &lt;size&gt; &lt;bytes|mb|gb&gt; &lt;password&gt;</code></pre>
+<h4>Parameters:</h4>
+<ul>
+    <li><code>&lt;size&gt;</code>: The size of the key file to generate.</li>
+    <li><code>&lt;bytes|mb|gb&gt;</code>: The unit of the size (bytes, megabytes, or gigabytes).</li>
+    <li><code>&lt;password&gt;</code>: The password used for key derivation.</li>
+</ul>
+<h4>Example:</h4>
+<pre><code>secure.exe keygen 5 mb mypassword</code></pre>
+<p>
+    This command generates a 5 MB key file named <code>key1.key1</code> using <code>mypassword</code> as the password.
+</p>
+
+<h3>OTP Processing Mode</h3>
+<p>
+    Encrypts or decrypts a file using the one-time pad method.
+</p>
+<h4>Syntax:</h4>
+<pre><code>secure.exe process &lt;input file&gt; &lt;output file&gt; &lt;key file&gt;</code></pre>
+<h4>Parameters:</h4>
+<ul>
+    <li><code>&lt;input file&gt;</code>: The path to the input file to encrypt or decrypt.</li>
+    <li><code>&lt;output file&gt;</code>: The path where the output file will be saved.</li>
+    <li><code>&lt;key file&gt;</code>: The key file generated in keygen mode.</li>
+</ul>
+<h4>Example:</h4>
+<pre><code>secure.exe process input.txt output.txt key1.key1</code></pre>
+<p>
+    This command processes <code>input.txt</code> using <code>key1.key1</code> and writes the result to <code>output.txt</code>.
+</p>
+
+<h2>Examples</h2>
+
+<h3>Generating a Key File</h3>
+<pre><code>secure.exe keygen 10 mb supersecretpassword</code></pre>
+<p>
+    Generates a 10 MB key file named <code>key1.key1</code> using <code>supersecretpassword</code> as the password.
+</p>
+
+<h3>Encrypting a File</h3>
+<pre><code>secure.exe process plaintext.txt ciphertext.txt key1.key1</code></pre>
+<p>
+    Encrypts <code>plaintext.txt</code> using <code>key1.key1</code> and saves the encrypted data to <code>ciphertext.txt</code>.
+</p>
+
+<h3>Decrypting a File</h3>
+<p>
+    Since the OTP method is symmetric and uses XOR, running the process command again on the encrypted file with the same key will decrypt it.
+</p>
+<pre><code>secure.exe process ciphertext.txt decrypted.txt key1.key1</code></pre>
+<p>
+    Decrypts <code>ciphertext.txt</code> using <code>key1.key1</code> and saves the result to <code>decrypted.txt</code>.
+</p>
+
+<h2>Security Considerations</h2>
+<ul>
+    <li><strong>Password Strength:</strong> Use a strong, unique password when generating keys.</li>
+    <li><strong>Key Management:</strong> The security of the OTP method depends on the secrecy of the key. Ensure that key files are stored securely and not reused.</li>
+    <li><strong>Key Size:</strong> The key must be at least as long as the data being encrypted.</li>
+    <li><strong>SALT and IV:</strong> The constants <code>SALT</code> and <code>IV</code> used in key generation should be securely generated and, if necessary, kept confidential.</li>
+    <li><strong>Data Integrity:</strong> This application does not provide integrity checks. Consider adding mechanisms to verify data integrity if needed.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+    <li>If you receive an error about incorrect usage, ensure you are providing the correct command-line arguments.</li>
+    <li>Ensure the key file exists and is at least as long as the input file when processing.</li>
+    <li>Check that the input files and key files are in the correct directories or provide absolute paths.</li>
+</ul>
+
+<h2>License</h2>
+<p>
+    This project is licensed under the MIT License.
+</p>
+
+<h2>Contact</h2>
+<p>
+    For questions or support, please contact <a href="mailto:your.email@example.com">your.email@example.com</a>.
+</p>
+
+</body>
+</html>
