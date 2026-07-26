@@ -1,0 +1,19 @@
+[package]
+name = "sivcrypt-pro"
+version = "0.3.0"          # bumped because of the edition + crate upgrades
+edition = "2024"
+rust-version = "1.94"      # matches your requested Rust version
+
+[dependencies]
+aes-gcm-siv = "0.11"                    # latest stable (0.11.1)
+argon2      = "0.5"                     # latest stable (0.5.3)
+rand        = "0.8"                     # kept at 0.8 (0.10 exists but would require API changes; 0.8 is rock-solid)
+clap        = { version = "4.6", features = ["derive"] }   # latest stable
+rpassword   = "7.4"                     # latest stable (7.4.0)
+zeroize     = "1.8"                     # latest stable (1.8.2)
+anyhow      = "1.0"                     # latest stable
+fs2         = "0.4"                     # still the reliable choice for this use-case
+indicatif   = "0.18"                    # latest stable
+filetime    = "0.2"                     # latest stable
+subtle      = "2.6"                     # latest stable
+atomic-write-file = "0.3"               # latest stable
