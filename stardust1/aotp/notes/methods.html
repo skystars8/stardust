@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One-Time Pad Encryption Methods</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2em auto;
+            background: #fff;
+            padding: 2em;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 1.5em;
+        }
+        p {
+            margin-bottom: 1em;
+        }
+        ul {
+            margin: 1em 0;
+            padding-left: 20px;
+        }
+        ul li {
+            margin-bottom: 0.5em;
+        }
+        code {
+            background-color: #eef;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Methods for Implementing a One-Time Pad Encryption App in Rust</h1>
+        <p>When creating a simple one-time pad encryption app in Rust, there are several different methods you can use to handle files, keys, and processing. Each method has its own advantages and trade-offs. Below, we discuss the main approaches available:</p>
+
+        <h2>1. Read Entire Key and File into Separate Buffers</h2>
+        <p>This approach involves reading the entire key and plaintext into memory buffers.</p>
+        <ul>
+            <li><strong>Advantages</strong>: Simple to implement, fast once data is loaded.</li>
+            <li><strong>Disadvantages</strong>: Not suitable for large files due to high memory usage.</li>
+        </ul>
+
+        <h2>2. Memory Mapping (mmap)</h2>
+        <p>Memory-mapped files allow the file content to be mapped directly into the address space of the program.</p>
+        <ul>
+            <li><strong>Advantages</strong>: Suitable for large files, reduces I/O overhead.</li>
+            <li><strong>Disadvantages</strong>: Requires more complex management and may have portability issues.</li>
+        </ul>
+
+        <h2>3. Chunk-Based Processing</h2>
+        <p>Instead of loading everything into memory, you can read and process both the file and key in fixed-size chunks.</p>
+        <ul>
+            <li><strong>Advantages</strong>: Lower memory usage, scales well for large files.</li>
+            <li><strong>Disadvantages</strong>: Slightly more complex due to chunk boundary management.</li>
+        </ul>
+
+        <h2>4. Streaming-Based Approach</h2>
+        <p>In this approach, encryption is done "on-the-fly" using streaming, without storing everything in memory.</p>
+        <ul>
+            <li><strong>Advantages</strong>: Minimal memory footprint, useful for real-time processing.</li>
+            <li><strong>Disadvantages</strong>: Complex synchronization, key access needs to be at the same pace as the file.</li>
+        </ul>
+
+        <h2>5. Combination of Buffering and Parallel Processing</h2>
+        <p>Break the file into multiple parts, and have each processed concurrently in different threads.</p>
+        <ul>
+            <li><strong>Advantages</strong>: Improved performance on multi-core CPUs.</li>
+            <li><strong>Disadvantages</strong>: Higher complexity due to concurrency management.</li>
+        </ul>
+
+        <h2>6. Direct Byte-by-Byte Stream Processing</h2>
+        <p>Read a byte from the file and key, process it, and write the result immediately.</p>
+        <ul>
+            <li><strong>Advantages</strong>: Extremely simple to implement, low memory usage.</li>
+            <li><strong>Disadvantages</strong>: Relatively slow due to constant I/O operations.</li>
+        </ul>
+
+        <h2>7. Pipelined I/O with Async Operations</h2>
+        <p>Using Rust's async capabilities to read, process, and write asynchronously.</p>
+        <ul>
+            <li><strong>Advantages</strong>: Non-blocking I/O, suitable for scaling multiple tasks.</li>
+            <li><strong>Disadvantages</strong>: Requires async programming knowledge, complex chunk boundary management.</li>
+        </ul>
+
+        <h2>Summary of Methods</h2>
+        <ul>
+            <li><strong>Entire Buffer</strong>: Simple, but high memory usage.</li>
+            <li><strong>Memory Mapping</strong>: Efficient for large files, but more complex to manage.</li>
+            <li><strong>Chunk-Based Processing</strong>: Scalable and efficient for large files, with moderate complexity.</li>
+            <li><strong>Streaming</strong>: Low memory footprint, real-time processing, but requires synchronization.</li>
+            <li><strong>Buffering with Parallel Processing</strong>: Good for performance, but complex due to concurrency.</li>
+            <li><strong>Byte-by-Byte Processing</strong>: Simple but slow due to many I/O operations.</li>
+            <li><strong>Async/Pipelined I/O</strong>: Non-blocking, suitable for multiple simultaneous tasks, requires async programming knowledge.</li>
+        </ul>
+
+        <p>Each of these methods is viable depending on the specific requirements you have, such as memory usage, file size, and processing speed. Generally, chunk-based processing or streaming are the most balanced approaches in terms of scalability and memory efficiency, while methods like memory mapping and async I/O offer performance advantages in specific scenarios.</p>
+    </div>
+</body>
+</html>

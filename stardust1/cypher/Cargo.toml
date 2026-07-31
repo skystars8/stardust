@@ -1,0 +1,22 @@
+[package]
+name = "cypher"
+version = "0.3.0"
+edition = "2024"
+rust-version = "1.94"
+description = "Modern secure file encryption CLI for Linux (Argon2id + ChaCha20-Poly1305) - atomic in-place"
+license = "MIT"
+
+[dependencies]
+argon2 = { workspace = true }
+chacha20poly1305 = { workspace = true }
+clap = { workspace = true, features = ["derive"] }
+rpassword = { workspace = true }
+rand = { workspace = true }
+anyhow = { workspace = true }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

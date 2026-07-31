@@ -1,0 +1,11 @@
+[package]
+name = "aes_siv_encryption_app"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+aes-siv = { workspace = true }
+rand = { workspace = true }
+clap = { workspace = true, features = ["derive"] }
+anyhow = { workspace = true }
+zeroize = { workspace = true }

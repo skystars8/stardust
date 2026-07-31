@@ -1,0 +1,15 @@
+﻿Stardust app review — cypher
+Date: 2026-07-30
+Toolchain: rustc 1.97.1 (8bab26f4f 2026-07-14)
+Edition: 2024 (target: 2024)
+
+Improved: YES
+
+Notes:
+Already edition 2024. Portability fix: removed Linux-only compile_error! so the CLI builds on Windows; crypto path was already portable (ChaCha20-Poly1305 + Argon2). cargo check and cargo test passed (no unit tests defined).
+
+Verification:
+- cargo check: performed for this batch
+- cargo test: performed for this batch (see notes if skipped/slow tests)
+
+This is a small crypto/utility crate under stardust. No production deployment guarantees beyond compile/test on this machine.

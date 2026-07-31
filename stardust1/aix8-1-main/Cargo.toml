@@ -1,0 +1,27 @@
+[package]
+name = "aix8"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.94.0"
+authors = ["Your Name"]
+description = "A production-grade, reliable file encryption CLI for Linux only, using XChaCha20-Poly1305 with streaming for large files."
+license = "MIT"
+
+[lib]
+name = "aix8_lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "aix8"
+path = "src/bin/aix8.rs"
+
+[dependencies]
+clap = { workspace = true, features = ["derive"] }
+libsodium-rs = { workspace = true }
+argon2 = { workspace = true }
+rpassword = { workspace = true }
+anyhow = { workspace = true }
+
+[dev-dependencies]
+tempdir = { workspace = true }
+rand = { workspace = true }

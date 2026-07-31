@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Encryptor - A Simple and Secure File Encryption Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0 10%;
+            color: #333;
+        }
+        h1, h2, h3, h4 {
+            color: #2c3e50;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 4px;
+            font-family: Consolas, monospace;
+            font-size: 0.95em;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        ul {
+            margin-left: 20px;
+        }
+        a {
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Encryptor</h1>
+<p><strong>A Simple and Secure File Encryption Tool</strong></p>
+
+<hr>
+
+<h2>Table of Contents</h2>
+<ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#technical-details">Technical Details</a></li>
+    <li><a href="#security-considerations">Security Considerations</a></li>
+    <li><a href="#customization">Customization</a></li>
+    <li><a href="#license">License</a></li>
+</ul>
+
+<hr>
+
+<h2 id="introduction">Introduction</h2>
+<p>Encryptor is a command-line application written in Rust that allows you to securely encrypt and decrypt files using strong cryptographic algorithms. It is designed to be simple to use while providing robust security for your sensitive data.</p>
+
+<h2 id="features">Features</h2>
+<ul>
+    <li>Encrypt and decrypt files using a password.</li>
+    <li>Utilizes AES-256-GCM for authenticated encryption.</li>
+    <li>Employs Argon2id for secure key derivation from passwords.</li>
+    <li>Generates random salts and nonces for enhanced security.</li>
+    <li>Simple command-line interface.</li>
+    <li>No external dependencies beyond Rust crates.</li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+<p>To build and run Encryptor, you need to have Rust installed on your system. If you haven't installed Rust yet, you can get it from <a href="https://www.rust-lang.org/tools/install" target="_blank">rust-lang.org</a>.</p>
+
+<ol>
+    <li><strong>Clone the Repository</strong>
+        <pre><code>git clone https://github.com/yourusername/encryptor.git
+cd encryptor</code></pre>
+    </li>
+    <li><strong>Update <code>Cargo.toml</code></strong><br>
+        Ensure your <code>Cargo.toml</code> has the following dependencies:
+        <pre><code>[dependencies]
+aes-gcm = "0.10.3"
+argon2 = "0.5.3"
+rand = "0.8.5"
+structopt = "0.3.26"
+rpassword = "7.3.1"
+anyhow = "1.0.93"</code></pre>
+    </li>
+    <li><strong>Build the Application</strong>
+        <pre><code>cargo build --release</code></pre>
+        The compiled binary will be located at <code>./target/release/enc</code>.
+    </li>
+</ol>
+
+<h2 id="usage">Usage</h2>
+<p>The Encryptor application provides two main commands: <code>encrypt</code> and <code>decrypt</code>. Below are the instructions on how to use them.</p>
+
+<h3>Encrypting a File</h3>
+<pre><code>./target/release/enc encrypt --input &lt;input_file&gt; --output &lt;output_file&gt;</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code>./target/release/enc encrypt --input secret.txt --output secret.enc</code></pre>
+<p>You will be prompted to enter a password. This password will be used to derive the encryption key.</p>
+
+<h3>Decrypting a File</h3>
+<pre><code>./target/release/enc decrypt --input &lt;input_file&gt; --output &lt;output_file&gt;</code></pre>
+<p><strong>Example:</strong></p>
+<pre><code>./target/release/enc decrypt --input secret.enc --output secret.txt</code></pre>
+<p>Enter the same password you used during encryption to successfully decrypt the file.</p>
+
+<h2 id="how-it-works">How It Works</h2>
+<p>Encryptor securely encrypts and decrypts files using the following steps:</p>
+
+<h3>Encryption Process</h3>
+<ol>
+    <li><strong>Read the Plaintext File</strong><br>
+        The application reads the contents of the input file into memory.
+    </li>
+    <li><strong>Generate a Random Salt</strong><br>
+        A 16-byte random salt is generated using a cryptographically secure random number generator.
+    </li>
+    <li><strong>Derive the Encryption Key</strong><br>
+        The user's password and the generated salt are used with Argon2id to derive a 256-bit encryption key.
+    </li>
+    <li><strong>Generate a Random Nonce</strong><br>
+        A 12-byte random nonce is generated for use with AES-256-GCM.
+    </li>
+    <li><strong>Encrypt the Data</strong><br>
+        The plaintext data is encrypted using AES-256-GCM with the derived key and nonce.
+    </li>
+    <li><strong>Write Encrypted Data</strong><br>
+        The salt, nonce, and ciphertext are written to the output file in the following order:
+        <ul>
+            <li>Salt (16 bytes)</li>
+            <li>Nonce (12 bytes)</li>
+            <li>Ciphertext (remaining bytes)</li>
+        </ul>
+    </li>
+</ol>
+
+<h3>Decryption Process</h3>
+<ol>
+    <li><strong>Read the Encrypted File</strong><br>
+        The application reads the contents of the encrypted file into memory.
+    </li>
+    <li><strong>Extract Salt, Nonce, and Ciphertext</strong><br>
+        The salt, nonce, and ciphertext are extracted from the file contents.
+    </li>
+    <li><strong>Derive the Decryption Key</strong><br>
+        The user's password and the extracted salt are used with Argon2id to derive the decryption key.
+    </li>
+    <li><strong>Decrypt the Data</strong><br>
+        The ciphertext is decrypted using AES-256-GCM with the derived key and nonce.
+    </li>
+    <li><strong>Write Decrypted Data</strong><br>
+        The decrypted plaintext is written to the output file.
+    </li>
+</ol>
+
+<h2 id="technical-details">Technical Details</h2>
+
+<h3>Key Derivation</h3>
+<p>Encryptor uses Argon2id for key derivation, which is a memory-hard function designed to resist GPU and ASIC attacks.</p>
+<ul>
+    <li><strong>Algorithm:</strong> Argon2id</li>
+    <li><strong>Salt Length:</strong> 16 bytes</li>
+    <li><strong>Output Key Length:</strong> 32 bytes (256 bits)</li>
+    <li><strong>Parameters:</strong> Default parameters (can be customized)</li>
+</ul>
+
+<h3>Encryption Algorithm</h3>
+<p>Encryptor uses AES-256-GCM for encryption, providing both confidentiality and integrity.</p>
+<ul>
+    <li><strong>Algorithm:</strong> AES-256-GCM</li>
+    <li><strong>Key Size:</strong> 256 bits</li>
+    <li><strong>Nonce Size:</strong> 12 bytes</li>
+    <li><strong>Mode:</strong> Galois/Counter Mode (GCM)</li>
+    <li><strong>Properties:</strong> Authenticated encryption with associated data (AEAD)</li>
+</ul>
+
+<h3>Random Number Generation</h3>
+<p>Secure random numbers are generated using the operating system's cryptographically secure random number generator via the <code>OsRng</code> from the <code>rand</code> crate.</p>
+
+<h2 id="security-considerations">Security Considerations</h2>
+
+<h3>Strengths</h3>
+<ul>
+    <li><strong>Secure Algorithms:</strong> Uses strong, industry-standard cryptographic algorithms.</li>
+    <li><strong>Key Derivation:</strong> Employs Argon2id to protect against brute-force and dictionary attacks.</li>
+    <li><strong>Random Salts and Nonces:</strong> Ensures uniqueness and prevents replay attacks.</li>
+    <li><strong>Authenticated Encryption:</strong> AES-GCM provides data integrity in addition to confidentiality.</li>
+</ul>
+
+<h3>Recommendations</h3>
+<ul>
+    <li><strong>Password Complexity:</strong> Use strong, complex passwords to enhance security.</li>
+    <li><strong>Keep Software Updated:</strong> Regularly update dependencies to incorporate security patches.</li>
+    <li><strong>Parameter Adjustment:</strong> Consider adjusting Argon2id parameters for increased security based on your needs.</li>
+    <li><strong>Data Sensitivity:</strong> For highly sensitive data, consider additional security measures or professional code audits.</li>
+</ul>
+
+<h2 id="customization">Customization</h2>
+
+<h3>Adjusting Argon2id Parameters</h3>
+<p>You can customize the Argon2id parameters in the <code>derive_key</code> function to increase the difficulty of brute-force attacks.</p>
+<pre><code>fn derive_key(password: &str, salt: &[u8]) -> anyhow::Result&lt;[u8; 32]&gt; {
+    let mut key = [0u8; 32];
+    let params = Params::new(
+        65536, // Memory size in KiB (e.g., 64 MiB)
+        3,     // Number of iterations
+        1,     // Parallelism factor
+        Some(32), // Output length in bytes
+    )?;
+    let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
+    argon2.hash_password_into(password.as_bytes(), salt, &mut key)?;
+    Ok(key)
+}</code></pre>
+<p><strong>Note:</strong> Increasing the memory size and iterations will make key derivation slower, enhancing security but potentially affecting performance.</p>
+
+<h3>Adding Features</h3>
+<ul>
+    <li><strong>Password Confirmation:</strong> Modify the code to require password confirmation during encryption.</li>
+    <li><strong>Progress Indicators:</strong> Implement progress bars for encrypting or decrypting large files.</li>
+    <li><strong>Error Handling:</strong> Enhance error messages for better user feedback.</li>
+</ul>
+
+<h2 id="license">License</h2>
+<p>This project is licensed under the MIT License - see the <code>LICENSE</code> file for details.</p>
+
+<hr>
+
+<h2>Conclusion</h2>
+<p>Encryptor provides a straightforward and secure way to encrypt and decrypt files using robust cryptographic techniques. By leveraging Rust's safety and the power of modern cryptography, it ensures your data remains confidential and intact.</p>
+<p>Feel free to contribute to the project or customize it to suit your specific needs. Always remember to use strong passwords and keep your software up to date to maintain the highest level of security.</p>
+
+</body>
+</html>

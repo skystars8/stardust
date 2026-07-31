@@ -1,0 +1,15 @@
+﻿Stardust app review — ascon
+Date: 2026-07-30
+Toolchain: rustc 1.97.1 (8bab26f4f 2026-07-14)
+Edition: 2024 (target: 2024)
+
+Improved: NO (already fine / no code changes)
+
+Notes:
+Already edition 2024. cargo check and cargo test passed. No source changes required for this pass.
+
+Verification:
+- cargo check: performed for this batch
+- cargo test: performed for this batch (see notes if skipped/slow tests)
+
+This is a small crypto/utility crate under stardust. No production deployment guarantees beyond compile/test on this machine.

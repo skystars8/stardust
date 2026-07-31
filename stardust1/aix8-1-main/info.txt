@@ -1,0 +1,18 @@
+﻿Stardust app review — aix8-1-main
+Date: 2026-07-30
+Toolchain: rustc 1.97.1 (8bab26f4f 2026-07-14)
+Edition: 2024 (target: 2024)
+
+Improved: YES
+
+Notes:
+Already edition 2024. Correctness/portability fixes:
+1) Windows build: gated unix PermissionsExt / 0o600 behind cfg(unix).
+2) Empty-file and exact-CHUNK_SIZE encrypt bug: always emit TAG_FINAL secretstream frame (empty files previously failed decrypt with "missing final authentication tag").
+cargo check OK; integration tests (excluding long stress) 7/7 OK on rustc 1.97.1 (8bab26f4f 2026-07-14).
+
+Verification:
+- cargo check: performed for this batch
+- cargo test: performed for this batch (see notes if skipped/slow tests)
+
+This is a small crypto/utility crate under stardust. No production deployment guarantees beyond compile/test on this machine.

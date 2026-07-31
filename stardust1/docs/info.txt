@@ -1,0 +1,11 @@
+﻿Stardust directory review — docs
+Date: 2026-07-30
+Toolchain: rustc 1.97.1 (8bab26f4f 2026-07-14)
+
+Improved: NO (not a Rust Cargo app, or not migrated as one)
+
+Notes:
+No Cargo.toml — not a Rust package root for edition migration.
+Top-level contents (sample): prompt.txt, test.txt
+
+Edition 2024 migration applies only to directories with a Cargo.toml package. This folder was left as-is.

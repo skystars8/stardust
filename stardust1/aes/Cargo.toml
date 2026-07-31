@@ -1,0 +1,23 @@
+[package]
+name = "stardust-aes"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.97.1"
+description = "Bulletproof AES-256-GCM-SIV file encryption/decryption CLI. Processes entirely in memory. Requires key.key (exactly 32 bytes) in the working directory. Input and output must be simple filenames in the same directory (no paths)."
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["aes", "gcm-siv", "encryption", "cli", "aead"]
+categories = ["command-line-utilities", "cryptography"]
+
+[dependencies]
+aes-gcm-siv = { workspace = true, features = ["std"] }
+anyhow = { workspace = true }
+clap = { workspace = true, features = ["derive"] }
+rand_core = { workspace = true }
+zeroize = { workspace = true }
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

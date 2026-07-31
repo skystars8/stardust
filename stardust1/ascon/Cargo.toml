@@ -1,0 +1,23 @@
+[package]
+name = "ascon"
+version = "1.0.0"
+edition = "2024"
+rust-version = "1.97.1"
+description = "Bulletproof Ascon-AEAD128 file encryption/decryption CLI. Processes entirely in memory. Requires key.key (exactly 16 bytes) in the working directory. Input and output must be simple filenames in the same directory (no paths)."
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["ascon", "aead", "encryption", "cli", "lightweight"]
+categories = ["command-line-utilities", "cryptography"]
+
+[dependencies]
+ascon-aead = { workspace = true }
+anyhow = { workspace = true }
+clap = { workspace = true, features = ["derive"] }
+getrandom = { workspace = true }
+zeroize = { workspace = true }
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
